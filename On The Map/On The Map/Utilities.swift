@@ -12,7 +12,7 @@ import UIKit
 class Utilities {
 	static func getValidResponseData(_ data: Data?, _ response: URLResponse?, _ error: Error?) -> Data? {
 		if error != nil {
-			print("\(error!)")
+			print(error!.localizedDescription)
 			return nil
 		}
 		

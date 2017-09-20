@@ -8,6 +8,7 @@
 
 import Foundation
 import FacebookCore
+import FacebookLogin
 
 class UdacityClient {
 	
@@ -54,8 +55,7 @@ class UdacityClient {
 			return
 		}
 		
-		let httpBodyString = "{\"facebook_mobile\": {\"access_token\": \"\(accessToken);\"}}"
-		print(httpBodyString)
+		let httpBodyString = "{\"facebook_mobile\": {\"access_token\": \"\(accessToken)\"}}"
 		let request = getLoginRequest(withBody: httpBodyString)
 		
 		let task = session.dataTask(with: request as URLRequest) { data, response, error in
@@ -65,6 +65,12 @@ class UdacityClient {
 	}
 	
 	func logout(completion: @escaping (_ success: Bool) -> Void) {
+		//log out of Facebook if necessary
+		if (AccessToken.current != nil) {
+			let loginManager = LoginManager()
+			loginManager.logOut()
+		}
+		
 		let request = NSMutableURLRequest(url: URL(string: Url.session)!)
 		request.httpMethod = WebMethod.delete
 		
