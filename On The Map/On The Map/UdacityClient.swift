@@ -31,6 +31,12 @@ class UdacityClient {
 		static let id = "id";
 	}
 	
+	struct DisplayError {
+		static let unexpected = "An unexpected error occurred."
+		static let network = "Could not connect to the Internet."
+		static let credentials = "Incorrect email or password."
+	}
+	
 	//MARK: Properties
 	
 	let session = URLSession.shared
@@ -38,9 +44,9 @@ class UdacityClient {
 	var udacitySessionID: String? = nil
 	var udacityAccountKey: String? = nil
 	
-	func login(email: String, password: String, completion: @escaping (_ success: Bool) -> Void) {
-		let httpBodyString = "{\"udacity\": {\"username\": \"\(email)\", \"password\": \"\(password)\"}}"
-		let request = getLoginRequest(withBody: httpBodyString)
+	func login(email: String, password: String, completion: @escaping (_ success: Bool, _ displayError: String?) -> Void) {
+		let requestBody = UdacityLoginRequest.get(email, password)
+		let request = getLoginRequest(withBody: requestBody)
 		
 		let task = session.dataTask(with: request as URLRequest) { data, response, error in
 			self.handleLoginTaskCompletion(data, response, error, completion)
@@ -48,15 +54,15 @@ class UdacityClient {
 		task.resume()
 	}
 	
-	func loginWithFacebook(completion: @escaping (_ success: Bool) -> Void) {
+	func loginWithFacebook(completion: @escaping (_ success: Bool, _ displayError: String?) -> Void) {
 		guard let accessToken = AccessToken.current?.authenticationToken else {
 			print("The Facebook access token is not set.")
-			completion(false)
+			completion(false, DisplayError.unexpected)
 			return
 		}
 		
-		let httpBodyString = "{\"facebook_mobile\": {\"access_token\": \"\(accessToken)\"}}"
-		let request = getLoginRequest(withBody: httpBodyString)
+		let requestBody = UdacityLoginWithFacebookRequest.get(accessToken)
+		let request = getLoginRequest(withBody: requestBody)
 		
 		let task = session.dataTask(with: request as URLRequest) { data, response, error in
 			self.handleLoginTaskCompletion(data, response, error, completion)
@@ -64,7 +70,8 @@ class UdacityClient {
 		task.resume()
 	}
 	
-	func logout(completion: @escaping (_ success: Bool) -> Void) {
+	func logout(completion: @escaping (_ success: Bool, _ displayError: String?) -> Void) {
+		
 		//log out of Facebook if necessary
 		if (AccessToken.current != nil) {
 			let loginManager = LoginManager()
@@ -74,107 +81,69 @@ class UdacityClient {
 		let request = NSMutableURLRequest(url: URL(string: Url.session)!)
 		request.httpMethod = WebMethod.delete
 		
-		if let xsrfCookie = getCookie(withKey: Cookie.xsrfToken) {
+		//add anti-XSRF cookie so Udacity server knows this is the client that originally logged in
+		if let xsrfCookie = Utilities.getCookie(withKey: Cookie.xsrfToken) {
 			request.setValue(xsrfCookie.value, forHTTPHeaderField: RequestKey.xxsrfToken)
 		}
 		
 		let task = session.dataTask(with: request as URLRequest) { data, response, error in
-			guard let jsonResponse = self.getJsonResponse(data, response, error) else {
-				print("Could not get a valid JSON response.")
-				completion(false)
+			
+			let responseHandler = ResponseHandler(data, response, error)
+			
+			if let responseError = responseHandler.getResponseError() {
+				completion(false, self.getDisplayError(responseError))
 				return
 			}
 			
-			print("\(jsonResponse)")
-			
-			completion(true)
+			completion(true, nil)
 		}
 		task.resume()
 	}
 	
-	private func getLoginRequest(withBody body: String) -> NSMutableURLRequest {
+	private func getLoginRequest<T: Encodable>(withBody body: T) -> NSMutableURLRequest {
 		let request = NSMutableURLRequest(url: URL(string: Url.session)!)
 		request.httpMethod = WebMethod.post
 		request.addValue(RequestValue.jsonType, forHTTPHeaderField: RequestKey.accept)
 		request.addValue(RequestValue.jsonType, forHTTPHeaderField: RequestKey.contentType)
-		request.httpBody = body.data(using: String.Encoding.utf8)
+		request.httpBody = JSONParser.stringify(body).data(using: String.Encoding.utf8)
 		return request
 	}
 	
 	private func handleLoginTaskCompletion(_ data: Data?,
 	                                       _ response: URLResponse?,
 	                                       _ error: Error?,
-	                                       _ completion: @escaping (_ success: Bool) -> Void) {
+	                                       _ completion: @escaping (_ success: Bool, _ displayError: String?) -> Void) {
 		
-		guard let jsonResponse = self.getJsonResponse(data, response, error) else {
-			print("Could not get a valid JSON response.")
-			completion(false)
+		let responseHandler = ResponseHandler(data, response, error)
+		
+		if let responseError = responseHandler.getResponseError() {
+			completion(false, getDisplayError(responseError))
 			return
-		}
-		
-		guard let dictionaryResponse = jsonResponse as? [String:AnyObject] else {
-			print("Could not get response dictionary from response \(jsonResponse)")
-			completion(false)
-			return
-		}
-		
-		guard let account = dictionaryResponse[ResponseKeys.account] as? [String:AnyObject] else {
-			print("Could not get account from response \(jsonResponse)")
-			completion(false)
-			return
-		}
-		
-		guard let accountKey = account[ResponseKeys.key] as? String else {
-			print("Could not get account key from response \(jsonResponse)")
-			completion(false)
-			return
-		}
-		
-		guard let session = dictionaryResponse[ResponseKeys.session] as? [String:AnyObject] else {
-			print("Could not get session from response \(jsonResponse)")
-			completion(false)
-			return
-		}
-		
-		guard let sessionID = session[ResponseKeys.id] as? String else {
-			print("Could not get account key from response \(jsonResponse)")
-			completion(false)
-			return
-		}
-		
-		self.udacityAccountKey = accountKey
-		self.udacitySessionID = sessionID
-		
-		print("Session ID: \(self.udacitySessionID!), Account key: \(self.udacityAccountKey!)")
-		
-		completion(true)
-	}
-	
-	private func getJsonResponse(_ data: Data?, _ response: URLResponse?, _ error: Error?) -> AnyObject? {
-		//check no error was returned, status code was 2xx, and data was returned
-		guard let validData = Utilities.getValidResponseData(data, response, error) else {
-			return nil
 		}
 		
 		//subset response
-		let range = Range(responseHeaderLength..<validData.count)
-		let subsetResponseData = validData.subdata(in: range)
+		let range = Range(responseHeaderLength..<data!.count)
+		let subsetResponseData = data!.subdata(in: range)
 		
-		//parse response to JSON
-		guard let jsonResponse = Utilities.getJson(subsetResponseData) else {
-			return nil
+		guard let response:UdacityLoginResponse = JSONParser.decode(subsetResponseData) else {
+			completion(false, DisplayError.unexpected)
+			return
 		}
 		
-		return jsonResponse
+		self.udacityAccountKey = response.account.key
+		self.udacitySessionID = response.session.id
+		
+		completion(true, nil)
 	}
 	
-	private func getCookie(withKey key: String) -> HTTPCookie? {
-		let sharedCookieStorage = HTTPCookieStorage.shared
-		for cookie in sharedCookieStorage.cookies! {
-			if cookie.name == key {
-				return cookie
-			}
+	private func getDisplayError(_ responseError: ResponseHandler.ResponseError) -> String {
+		switch responseError {
+		case .credentials:
+			return DisplayError.credentials
+		case .network:
+			return DisplayError.network
+		case .unexpected:
+			return DisplayError.unexpected
 		}
-		return nil
 	}
 }

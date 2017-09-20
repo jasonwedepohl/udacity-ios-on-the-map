@@ -10,19 +10,13 @@ import UIKit
 
 class StudentsTabBarController: UITabBarController {
 	
-	//MARK: Constants
-	
-	let logoutFailedMessage = "We couldn't log you out."
-	
-	//MARK: Actions
-	
 	@IBAction func logout(_ sender: Any) {
-		UdacityClient.shared.logout(completion: {(successful) in
+		UdacityClient.shared.logout(completion: {(successful, displayError) in
 			DispatchQueue.main.async {
 				if (successful) {
 					self.dismiss(animated: true, completion: nil)
 				} else {
-					Utilities.showErrorAlert(self, self.logoutFailedMessage)
+					Utilities.showErrorAlert(self, displayError)
 				}
 			}
 		})

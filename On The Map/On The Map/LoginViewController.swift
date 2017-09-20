@@ -14,8 +14,12 @@ class LoginViewController: UIViewController {
 	//MARK: Constants
 	
 	let loginSegue = "LoginSegue"
-	let loginFailedMessage = "We couldn't log you in."
 	let udacitySignUpUrl = "https://www.udacity.com/account/auth#!/signup"
+	
+	//MARK: Properties
+	
+	var blurView: UIVisualEffectView? = nil
+	var spinnerView: UIActivityIndicatorView? = nil
 	
 	//MARK: Outlets
 	
@@ -31,7 +35,9 @@ class LoginViewController: UIViewController {
 			return
 		}
 		
-		UdacityClient.shared.login(email: emailField.text!, password: passwordField.text!, completion: completeLogin(_:))
+		showWaitingSpinner()
+		
+		UdacityClient.shared.login(email: emailField.text!, password: passwordField.text!, completion: completeLogin(_:_:))
 	}
 	
 	//MARK: UIViewController overrides
@@ -66,19 +72,49 @@ class LoginViewController: UIViewController {
 			
 			case .success:
 				print("Facebook login was successful.")
-				UdacityClient.shared.loginWithFacebook(completion: self.completeLogin(_:))
+				
+				self.showWaitingSpinner()
+				
+				UdacityClient.shared.loginWithFacebook(completion: self.completeLogin(_:_:))
 				
 			}
 		}
 	}
 	
-	private func completeLogin(_ successful: Bool) {
+	private func completeLogin(_ successful: Bool, _ displayError: String?) {
 		DispatchQueue.main.async {
 			if (successful) {
 				self.performSegue(withIdentifier: self.loginSegue, sender: nil)
 			} else {
-				Utilities.showErrorAlert(self, self.loginFailedMessage)
+				Utilities.showErrorAlert(self, displayError)
 			}
+			
+			self.hideWaitingSpinner()
+		}
+	}
+	
+	private func showWaitingSpinner() {
+		//first add blur view to blur screen contents
+		blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+		blurView!.frame = view.bounds
+		view.addSubview(blurView!)
+		
+		//then add a spinner in the center
+		spinnerView = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+		spinnerView?.center = view.center
+		spinnerView?.startAnimating()
+		view.addSubview(spinnerView!)
+	}
+	
+	private func hideWaitingSpinner() {
+		if (blurView != nil) {
+			blurView!.removeFromSuperview()
+			blurView = nil
+		}
+		
+		if (spinnerView != nil) {
+			spinnerView!.removeFromSuperview()
+			spinnerView = nil
 		}
 	}
 }
