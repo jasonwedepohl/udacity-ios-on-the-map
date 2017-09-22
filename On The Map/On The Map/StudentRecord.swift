@@ -19,7 +19,7 @@ struct StudentRecord {
 	let uniqueKey: String
 	let updatedAt: String
 	
-	init(_ studentRecordResponse: StudentRecordResponse) {
+	init(_ studentRecordResponse: ParseClient.StudentRecordResponse) {
 		createdAt = studentRecordResponse.createdAt!
 		firstName = studentRecordResponse.firstName!
 		lastName = studentRecordResponse.lastName!

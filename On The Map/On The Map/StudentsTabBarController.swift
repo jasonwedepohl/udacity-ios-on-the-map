@@ -10,6 +10,10 @@ import UIKit
 
 class StudentsTabBarController: UITabBarController {
 	
+	//MARK: Constants
+	
+	let informationPostingSegue = "InformationPostingSegue"
+	
 	//MARK: Properties
 	
 	var completionForGettingStudentRecords: (() -> ())?
@@ -18,6 +22,7 @@ class StudentsTabBarController: UITabBarController {
 	//MARK: Outlets
 	
 	@IBOutlet var refreshButton: UIBarButtonItem!
+	@IBOutlet var addPinButton: UIBarButtonItem!
 	
 	//MARK: Actions
 	
@@ -36,19 +41,21 @@ class StudentsTabBarController: UITabBarController {
 		})
 	}
 	
+	@IBAction func addPin(_ sender: Any) {
+		performSegue(withIdentifier: informationPostingSegue, sender: nil)
+	}
+	
 	@IBAction func refresh() {
 		//do not allow the user to refresh during load
 		refreshButton.isEnabled = false
 		waitingSpinner.show(self)
 		
-		ParseClient.shared.getStudentLocations { (successful, error, studentRecords) in
+		ParseClient.shared.getStudentLocations { (successful, error) in
 			DispatchQueue.main.async {
 				self.refreshButton.isEnabled = true
 				self.waitingSpinner.hide()
 				
 				if successful {
-					StudentRecordCache.instance.set(studentRecords!)
-					
 					if self.completionForGettingStudentRecords == nil {
 						print("Completion handler for student records is not set!")
 						return
@@ -64,7 +71,7 @@ class StudentsTabBarController: UITabBarController {
 	//MARK: UIViewController overrides
 	
 	override func viewWillAppear(_ animated: Bool) {
-		if (StudentRecordCache.instance.getAll().isEmpty) {
+		if (ParseClient.shared.studentRecords.isEmpty) {
 			refresh()
 		}
 	}

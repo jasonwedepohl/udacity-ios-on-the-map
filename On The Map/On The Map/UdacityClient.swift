@@ -124,4 +124,49 @@ class UdacityClient {
 		
 		completion(true, nil)
 	}
+	
+	//MARK: Request structs
+	
+	private struct UdacityLoginRequest: Codable {
+		private let udacity : Udacity
+		
+		private struct Udacity : Codable {
+			let username: String
+			let password: String
+		}
+		
+		static func get(_ username: String, _ password: String) -> UdacityLoginRequest {
+			return UdacityLoginRequest(udacity: Udacity(username: username, password: password))
+		}
+	}
+	
+	private struct UdacityLoginWithFacebookRequest: Codable {
+		private let facebook_mobile : FacebookMobile
+		
+		private struct FacebookMobile : Codable {
+			let access_token: String
+		}
+		
+		static func get(_ accessToken: String) -> UdacityLoginWithFacebookRequest {
+			return UdacityLoginWithFacebookRequest(facebook_mobile: FacebookMobile(access_token: accessToken))
+		}
+	}
+	
+	//MARK: Response structs
+	
+	private struct UdacityLoginResponse: Codable {
+		
+		let account: Account
+		let session: Session
+		
+		struct Account: Codable {
+			let registered: Bool
+			let key: String
+		}
+		
+		struct Session: Codable {
+			let id: String
+			let expiration: String
+		}
+	}
 }

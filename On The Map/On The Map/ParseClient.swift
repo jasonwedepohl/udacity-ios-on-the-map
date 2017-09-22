@@ -40,10 +40,19 @@ class ParseClient {
 	
 	let session = URLSession.shared
 	var waitingForLocations = false
+	var studentRecords = [StudentRecord]()
 	
 	//MARK: Functions
 	
-	func getStudentLocations(completion: @escaping (_ success: Bool, _ displayError: String?, _ studentRecords: [StudentRecord]?) -> Void) {
+	func getRecord(fromIndex index: Int) -> StudentRecord? {
+		if (index >= studentRecords.count) {
+			print("Student record index out of bounds.")
+			return nil
+		}
+		return studentRecords[index]
+	}
+	
+	func getStudentLocations(completion: @escaping (_ success: Bool, _ displayError: String?) -> Void) {
 		if waitingForLocations {
 			return
 		}
@@ -59,17 +68,52 @@ class ParseClient {
 			let responseHandler = ResponseHandler(data, response, error)
 			
 			if let responseError = responseHandler.getResponseError() {
-				completion(false, responseError, nil)
+				completion(false, responseError)
 				return
 			}
 			
 			guard let response:StudentRecordsResponse = JSONParser.decode(data!) else {
-				completion(false, DisplayError.unexpected, nil)
+				completion(false, DisplayError.unexpected)
 				return
 			}
 			
-			completion(true, nil, response.studentRecords)
+			//some of the Parse server's records have missing properties, so filter them out
+			let validResponseResults = response.results.filter {
+				$0.createdAt != nil &&
+					$0.firstName != nil && !$0.firstName!.isEmpty &&
+					$0.lastName != nil && !$0.lastName!.isEmpty &&
+					$0.latitude != nil &&
+					$0.longitude != nil &&
+					$0.mapString != nil &&
+					$0.mediaURL != nil && !$0.mediaURL!.isEmpty &&
+					$0.objectId != nil &&
+					$0.uniqueKey != nil &&
+					$0.updatedAt != nil
+			}
+			
+			self.studentRecords = validResponseResults.map { StudentRecord($0) }
+			
+			completion(true, nil)
 		}
 		task.resume()
+	}
+	
+	//MARK: Response structs
+	
+	private struct StudentRecordsResponse : Codable {
+		var results: [StudentRecordResponse]
+	}
+	
+	struct StudentRecordResponse: Codable {
+		var createdAt: String?
+		var firstName: String?
+		var lastName: String?
+		var latitude: Float?
+		var longitude: Float?
+		var mapString: String?
+		var mediaURL: String?
+		var objectId: String?
+		var uniqueKey: String?
+		var updatedAt: String?
 	}
 }

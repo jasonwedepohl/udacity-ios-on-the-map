@@ -32,13 +32,13 @@ class StudentsListController: UIViewController, UITableViewDataSource, UITableVi
 	//MARK: UITableViewDataSource implementation
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return StudentRecordCache.instance.getAll().count
+		return ParseClient.shared.studentRecords.count
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
 		
-		guard let record = StudentRecordCache.instance.get(fromIndex: indexPath.row) else {
+		guard let record = ParseClient.shared.getRecord(fromIndex: indexPath.row) else {
 			print ("Record was not found.")
 			return cell
 		}
@@ -52,7 +52,7 @@ class StudentsListController: UIViewController, UITableViewDataSource, UITableVi
 	
 	//navigate to student's media URL on row tap
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		guard let record = StudentRecordCache.instance.get(fromIndex: indexPath.row) else {
+		guard let record = ParseClient.shared.getRecord(fromIndex: indexPath.row) else {
 			print ("Record was not found.")
 			return
 		}
