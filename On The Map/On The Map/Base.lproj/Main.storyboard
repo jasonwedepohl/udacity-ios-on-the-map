@@ -186,8 +186,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="UVv-wX-j1f">
-                                <rect key="frame" x="0.0" y="64" width="320" height="455"/>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="UVv-wX-j1f">
+                                <rect key="frame" x="0.0" y="104" width="320" height="415"/>
                                 <connections>
                                     <outlet property="delegate" destination="kDv-Lg-pce" id="yaY-qo-orC"/>
                                 </connections>
@@ -267,53 +267,69 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="vqa-ng-xzM" userLabel="InputContainer">
-                                <rect key="frame" x="8" y="96" width="304" height="100"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="32" translatesAutoresizingMaskIntoConstraints="NO" id="vqa-ng-xzM" userLabel="InputContainer">
+                                <rect key="frame" x="8" y="96" width="304" height="204"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Where are you studying today?" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WGP-ZY-Wys" userLabel="Prompt">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Where are you studying today?" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WGP-ZY-Wys" userLabel="MapStringPrompt">
                                         <rect key="frame" x="0.0" y="0.0" width="304" height="24"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                        <nil key="textColor"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Location description" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="QR3-3v-MLZ" userLabel="MapStringTextField">
-                                        <rect key="frame" x="0.0" y="32" width="304" height="30"/>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter your address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="QR3-3v-MLZ" userLabel="MapStringTextField">
+                                        <rect key="frame" x="0.0" y="56" width="304" height="30"/>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="wtb-Ha-Nbn" id="ZE8-L2-1Bw"/>
+                                        </connections>
                                     </textField>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="URL" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Kt0-ql-sdU" userLabel="MediaURLTextField">
-                                        <rect key="frame" x="0.0" y="70" width="304" height="30"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="What would you like to show?" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xXC-f7-Xsd" userLabel="MediaURLPrompt">
+                                        <rect key="frame" x="0.0" y="118" width="304" height="24"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter a URL" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Kt0-ql-sdU" userLabel="MediaURLTextField">
+                                        <rect key="frame" x="0.0" y="174" width="304" height="30"/>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="wtb-Ha-Nbn" id="2s3-s9-4Id"/>
+                                        </connections>
                                     </textField>
                                 </subviews>
                             </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="XQh-fb-Lf6" userLabel="ButtonContainer">
-                                <rect key="frame" x="8" y="488" width="320" height="72"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uwO-Jh-stC" userLabel="MapViewContainer">
+                                <rect key="frame" x="0.0" y="332" width="320" height="236"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IeO-TN-SM8" userLabel="FindButton">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="36"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                        <state key="normal" title="Find on the Map"/>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sbO-r5-yDe">
-                                        <rect key="frame" x="0.0" y="36" width="320" height="36"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                        <state key="normal" title="Submit"/>
-                                    </button>
+                                    <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="UJJ-ih-YD3">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="236"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="wtb-Ha-Nbn" id="xZ9-Jr-KLf"/>
+                                        </connections>
+                                    </mapView>
                                 </subviews>
-                            </stackView>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="UJJ-ih-YD3" firstAttribute="leading" secondItem="uwO-Jh-stC" secondAttribute="leading" id="Usl-4K-nLW"/>
+                                    <constraint firstItem="UJJ-ih-YD3" firstAttribute="top" secondItem="uwO-Jh-stC" secondAttribute="top" id="aSg-0i-u2f"/>
+                                    <constraint firstItem="UJJ-ih-YD3" firstAttribute="trailing" secondItem="uwO-Jh-stC" secondAttribute="trailing" id="mjP-8y-4kZ"/>
+                                    <constraint firstItem="UJJ-ih-YD3" firstAttribute="bottom" secondItem="uwO-Jh-stC" secondAttribute="bottom" id="sMM-NX-3kL"/>
+                                </constraints>
+                            </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.90196078430000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="XQh-fb-Lf6" firstAttribute="leading" secondItem="hAD-1e-fzF" secondAttribute="leading" constant="8" id="8Zc-zc-f9B"/>
-                            <constraint firstItem="vTV-uV-cab" firstAttribute="top" secondItem="XQh-fb-Lf6" secondAttribute="bottom" constant="8" id="GT1-Cg-fRz"/>
-                            <constraint firstItem="vqa-ng-xzM" firstAttribute="leading" secondItem="hAD-1e-fzF" secondAttribute="leading" constant="8" id="HhY-vW-AGH"/>
-                            <constraint firstAttribute="trailing" secondItem="XQh-fb-Lf6" secondAttribute="trailing" constant="-8" id="HkF-TQ-ief"/>
-                            <constraint firstItem="vqa-ng-xzM" firstAttribute="trailing" secondItem="hAD-1e-fzF" secondAttribute="trailing" constant="-8" id="Rrr-Ww-b0y"/>
-                            <constraint firstItem="vqa-ng-xzM" firstAttribute="top" secondItem="JUJ-At-CR3" secondAttribute="bottom" constant="32" id="fw4-YH-gQ4"/>
+                            <constraint firstItem="vqa-ng-xzM" firstAttribute="top" secondItem="JUJ-At-CR3" secondAttribute="bottom" constant="32" id="3zv-g9-k6g"/>
+                            <constraint firstItem="uwO-Jh-stC" firstAttribute="bottom" secondItem="vTV-uV-cab" secondAttribute="top" id="4fJ-Eu-M1s"/>
+                            <constraint firstItem="uwO-Jh-stC" firstAttribute="top" secondItem="vqa-ng-xzM" secondAttribute="bottom" constant="32" id="9fH-tU-MKV"/>
+                            <constraint firstItem="vqa-ng-xzM" firstAttribute="trailing" secondItem="hAD-1e-fzF" secondAttribute="trailing" constant="-8" id="E7I-P4-flp"/>
+                            <constraint firstItem="uwO-Jh-stC" firstAttribute="trailing" secondItem="hAD-1e-fzF" secondAttribute="trailing" id="GI1-4l-PfJ"/>
+                            <constraint firstItem="vqa-ng-xzM" firstAttribute="leading" secondItem="hAD-1e-fzF" secondAttribute="leading" constant="8" id="wYa-me-oLv"/>
+                            <constraint firstItem="uwO-Jh-stC" firstAttribute="leading" secondItem="hAD-1e-fzF" secondAttribute="leading" id="yKb-r9-xEI"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="zto-at-NMf">
@@ -324,12 +340,11 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="findOnTheMapButton" destination="IeO-TN-SM8" id="A6i-4s-zB8"/>
-                        <outlet property="inputContainer" destination="vqa-ng-xzM" id="fUb-Gc-FPX"/>
                         <outlet property="mapStringInput" destination="QR3-3v-MLZ" id="QE1-Pm-nvv"/>
                         <outlet property="mapStringPrompt" destination="WGP-ZY-Wys" id="ujD-wi-ydw"/>
+                        <outlet property="mapView" destination="UJJ-ih-YD3" id="9dk-ok-pOe"/>
                         <outlet property="mediaURLInput" destination="Kt0-ql-sdU" id="KXW-aK-9hT"/>
-                        <outlet property="submitButton" destination="sbO-r5-yDe" id="cbY-4p-ZRh"/>
+                        <outlet property="mediaURLPrompt" destination="xXC-f7-Xsd" id="Yo3-LV-ZAM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lcz-3P-NfR" userLabel="First Responder" sceneMemberID="firstResponder"/>

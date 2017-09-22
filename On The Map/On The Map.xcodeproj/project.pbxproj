@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3D6C023717BCF5A6C2C99A84 /* Pods_On_The_Map.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64B629FC897EAA5F18A1FDED /* Pods_On_The_Map.framework */; };
 		4D0ED4F81F752F7B008CA71C /* InformationPostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D0ED4F71F752F7B008CA71C /* InformationPostingController.swift */; };
+		4D0ED4FA1F754B3A008CA71C /* LocationFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D0ED4F91F754B34008CA71C /* LocationFinder.swift */; };
 		4D4E87251F7120E4004BB28F /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4E87241F7120E4004BB28F /* Utilities.swift */; };
 		4D4E87271F7129CC004BB28F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4E87261F7129CC004BB28F /* Constants.swift */; };
 		4D4E872B1F713F10004BB28F /* StudentsTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4E872A1F713F10004BB28F /* StudentsTabBarController.swift */; };
@@ -29,6 +30,7 @@
 
 /* Begin PBXFileReference section */
 		4D0ED4F71F752F7B008CA71C /* InformationPostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationPostingController.swift; sourceTree = "<group>"; };
+		4D0ED4F91F754B34008CA71C /* LocationFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFinder.swift; sourceTree = "<group>"; };
 		4D4E87241F7120E4004BB28F /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		4D4E87261F7129CC004BB28F /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		4D4E872A1F713F10004BB28F /* StudentsTabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentsTabBarController.swift; sourceTree = "<group>"; };
@@ -71,6 +73,7 @@
 				4D7413FB1F72CB6400468107 /* ResponseHandler.swift */,
 				4D4E87241F7120E4004BB28F /* Utilities.swift */,
 				4D5E673C1F74F5670060288E /* WaitingSpinner.swift */,
+				4D0ED4F91F754B34008CA71C /* LocationFinder.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -303,6 +306,7 @@
 				4D0ED4F81F752F7B008CA71C /* InformationPostingController.swift in Sources */,
 				4DED8D951F70091700E1E2ED /* AppDelegate.swift in Sources */,
 				4D4E87251F7120E4004BB28F /* Utilities.swift in Sources */,
+				4D0ED4FA1F754B3A008CA71C /* LocationFinder.swift in Sources */,
 				4D7413FC1F72CB6400468107 /* ResponseHandler.swift in Sources */,
 				4DED8DA71F701BEE00E1E2ED /* UdacityClient.swift in Sources */,
 				4D5F38221F740C2D0040AFC9 /* ParseClient.swift in Sources */,
