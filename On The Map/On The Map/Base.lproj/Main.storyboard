@@ -185,9 +185,26 @@
                     <view key="view" contentMode="scaleToFill" id="RmX-IG-A5I">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="UVv-wX-j1f">
+                                <rect key="frame" x="0.0" y="64" width="320" height="455"/>
+                                <connections>
+                                    <outlet property="delegate" destination="kDv-Lg-pce" id="yaY-qo-orC"/>
+                                </connections>
+                            </mapView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="UVv-wX-j1f" firstAttribute="bottom" secondItem="5Bl-og-UIT" secondAttribute="top" id="K8j-T7-R9z"/>
+                            <constraint firstItem="UVv-wX-j1f" firstAttribute="top" secondItem="Tzz-a9-DIj" secondAttribute="bottom" id="S5r-Q4-tCl"/>
+                            <constraint firstItem="UVv-wX-j1f" firstAttribute="leading" secondItem="RmX-IG-A5I" secondAttribute="leading" id="WuT-TE-R5K"/>
+                            <constraint firstItem="UVv-wX-j1f" firstAttribute="trailing" secondItem="RmX-IG-A5I" secondAttribute="trailing" id="wDh-YN-fjo"/>
+                        </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="icon_mapview-selected" id="IMf-FY-5wE"/>
+                    <connections>
+                        <outlet property="mapView" destination="UVv-wX-j1f" id="vwX-mZ-qbh"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="f5C-q5-WJv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
