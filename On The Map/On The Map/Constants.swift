@@ -27,3 +27,9 @@ struct RequestValue {
 struct Cookie {
 	static let xsrfToken = "XSRF-TOKEN";
 }
+
+struct DisplayError {
+	static let unexpected = "An unexpected error occurred."
+	static let network = "Could not connect to the Internet."
+	static let credentials = "Incorrect email or password."
+}

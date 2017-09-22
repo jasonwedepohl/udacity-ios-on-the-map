@@ -24,25 +24,14 @@ class UdacityClient {
 		static let session = "https://www.udacity.com/api/session"
 	}
 	
-	struct ResponseKeys {
-		static let account = "account";
-		static let key = "key";
-		static let session = "session";
-		static let id = "id";
-	}
-	
-	struct DisplayError {
-		static let unexpected = "An unexpected error occurred."
-		static let network = "Could not connect to the Internet."
-		static let credentials = "Incorrect email or password."
-	}
-	
 	//MARK: Properties
 	
 	let session = URLSession.shared
 	
 	var udacitySessionID: String? = nil
 	var udacityAccountKey: String? = nil
+	
+	//MARK: Functions
 	
 	func login(email: String, password: String, completion: @escaping (_ success: Bool, _ displayError: String?) -> Void) {
 		let requestBody = UdacityLoginRequest.get(email, password)
@@ -91,7 +80,7 @@ class UdacityClient {
 			let responseHandler = ResponseHandler(data, response, error)
 			
 			if let responseError = responseHandler.getResponseError() {
-				completion(false, self.getDisplayError(responseError))
+				completion(false, responseError)
 				return
 			}
 			
@@ -117,7 +106,7 @@ class UdacityClient {
 		let responseHandler = ResponseHandler(data, response, error)
 		
 		if let responseError = responseHandler.getResponseError() {
-			completion(false, getDisplayError(responseError))
+			completion(false, responseError)
 			return
 		}
 		
@@ -134,16 +123,5 @@ class UdacityClient {
 		self.udacitySessionID = response.session.id
 		
 		completion(true, nil)
-	}
-	
-	private func getDisplayError(_ responseError: ResponseHandler.ResponseError) -> String {
-		switch responseError {
-		case .credentials:
-			return DisplayError.credentials
-		case .network:
-			return DisplayError.network
-		case .unexpected:
-			return DisplayError.unexpected
-		}
 	}
 }
