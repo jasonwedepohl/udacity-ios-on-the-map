@@ -22,7 +22,7 @@ class StudentsMapController: UIViewController, MKMapViewDelegate {
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-		(tabBarController! as! StudentsTabBarController).completionForGettingStudentRecords = displayStudentRecords
+		(tabBarController! as! StudentsTabBarController).updateMapView = displayStudentRecords
 	}
 	
 	func displayStudentRecords() {

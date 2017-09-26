@@ -21,7 +21,7 @@ class StudentsListController: UIViewController, UITableViewDataSource, UITableVi
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-		(tabBarController! as! StudentsTabBarController).completionForGettingStudentRecords = displayStudentRecords
+		(tabBarController! as! StudentsTabBarController).updateTableView = displayStudentRecords
 	}
 	
 	func displayStudentRecords() {
@@ -38,7 +38,7 @@ class StudentsListController: UIViewController, UITableViewDataSource, UITableVi
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
 		
-		guard let record = ParseClient.shared.getRecord(fromIndex: indexPath.row) else {
+		guard let record = ParseClient.shared.getRecordInCache(fromIndex: indexPath.row) else {
 			print ("Record was not found.")
 			return cell
 		}
@@ -52,7 +52,7 @@ class StudentsListController: UIViewController, UITableViewDataSource, UITableVi
 	
 	//navigate to student's media URL on row tap
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		guard let record = ParseClient.shared.getRecord(fromIndex: indexPath.row) else {
+		guard let record = ParseClient.shared.getRecordInCache(fromIndex: indexPath.row) else {
 			print ("Record was not found.")
 			return
 		}

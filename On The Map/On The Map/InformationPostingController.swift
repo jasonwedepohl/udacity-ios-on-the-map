@@ -20,6 +20,7 @@ class InformationPostingController: UIViewController {
 	
 	let waitingSpinner = WaitingSpinner()
 	var mapString = ""
+	var coordinate: CLLocationCoordinate2D? = nil
 
 	//MARK: Outlets
 	
@@ -48,7 +49,8 @@ class InformationPostingController: UIViewController {
 				if coordinate == nil {
 					Utilities.showErrorAlert(self, "Could not find the location of \"\(self.mapString)\".")
 				} else {
-					self.showLocationAndAllowSubmit(coordinate!)
+					self.coordinate = coordinate
+					self.showLocationAndAllowSubmit()
 				}
 			}
 		}
@@ -62,12 +64,25 @@ class InformationPostingController: UIViewController {
 			return
 		}
 		
-		//TODO: disable submit button, show blur, post data back to Parse server
-		print("Post data: \(mapString) \(mediaURL)")
-		dismiss(animated: true, completion: nil)
+		waitingSpinner.show(self)
+		
+		ParseClient.shared.setStudentRecord(mapString,
+		                                    coordinate!.latitude,
+		                                    coordinate!.longitude,
+		                                    mediaURL) { (successful, displayError) in
+			DispatchQueue.main.async {
+				self.waitingSpinner.hide()
+				
+				if (successful) {
+					self.dismiss(animated: true, completion: nil)
+				} else {
+					Utilities.showErrorAlert(self, displayError)
+				}
+			}
+		}
 	}
 	
-	private func showLocationAndAllowSubmit(_ coordinate: CLLocationCoordinate2D) {
+	private func showLocationAndAllowSubmit() {
 		self.mapStringPrompt.isHidden = true
 		self.mapStringInput.isHidden = true
 		
@@ -76,11 +91,11 @@ class InformationPostingController: UIViewController {
 		self.mediaURLInput.isHidden = false
 		
 		//navigate to map location
-		self.mapView.setCenter(coordinate, animated: false)
+		self.mapView.setCenter(coordinate!, animated: false)
 		
 		//add pin
 		let annotation = MKPointAnnotation()
-		annotation.coordinate = coordinate
+		annotation.coordinate = coordinate!
 		self.mapView.addAnnotation(annotation)
 	}
 	

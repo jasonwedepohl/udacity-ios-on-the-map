@@ -13,10 +13,12 @@ class StudentsTabBarController: UITabBarController {
 	//MARK: Constants
 	
 	let informationPostingSegue = "InformationPostingSegue"
+	let overwriteAlertQuestion = "You have already posted a location. Would you like to overwrite it?"
 	
 	//MARK: Properties
 	
-	var completionForGettingStudentRecords: (() -> ())?
+	var updateMapView: (() -> ())?
+	var updateTableView: (() -> ())?
 	let waitingSpinner = WaitingSpinner()
 	
 	//MARK: Outlets
@@ -42,7 +44,27 @@ class StudentsTabBarController: UITabBarController {
 	}
 	
 	@IBAction func addPin(_ sender: Any) {
-		performSegue(withIdentifier: informationPostingSegue, sender: nil)
+		if ParseClient.shared.loggedInStudentRecordID == nil {
+			waitingSpinner.show(self)
+			
+			ParseClient.shared.getLoggedInStudentRecord() { (successful, displayError) in
+				DispatchQueue.main.async {
+					self.waitingSpinner.hide()
+					
+					if (successful) {
+						if ParseClient.shared.loggedInStudentRecordID == nil {
+							self.segueToInformationPostingView()
+						} else {
+							self.showOverwriteAlert()
+						}
+					} else {
+						Utilities.showErrorAlert(self, displayError)
+					}
+				}
+			}
+		} else {
+			showOverwriteAlert()
+		}
 	}
 	
 	@IBAction func refresh() {
@@ -50,17 +72,23 @@ class StudentsTabBarController: UITabBarController {
 		refreshButton.isEnabled = false
 		waitingSpinner.show(self)
 		
-		ParseClient.shared.getStudentLocations { (successful, error) in
+		ParseClient.shared.getStudentRecords { (successful, error) in
 			DispatchQueue.main.async {
 				self.refreshButton.isEnabled = true
 				self.waitingSpinner.hide()
 				
 				if successful {
-					if self.completionForGettingStudentRecords == nil {
-						print("Completion handler for student records is not set!")
-						return
+					if self.updateMapView == nil {
+						print("Completion handler for updating map view is not set!")
+					} else {
+						self.updateMapView?()
 					}
-					self.completionForGettingStudentRecords?()
+					
+					if self.updateTableView == nil {
+						print("Completion handler for updating table view is not set!")
+					} else {
+						self.updateTableView?()
+					}
 				} else {
 					Utilities.showErrorAlert(self, error)
 				}
@@ -68,10 +96,28 @@ class StudentsTabBarController: UITabBarController {
 		}
 	}
 	
+	private func showOverwriteAlert() {
+		let alertController = UIAlertController(title: "Warning", message: overwriteAlertQuestion, preferredStyle: .alert)
+		
+		let okAction = UIAlertAction(title: "Overwrite", style: .default) { action in
+			self.segueToInformationPostingView()
+		}
+		let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+		
+		alertController.addAction(okAction)
+		alertController.addAction(cancelAction)
+		
+		self.present(alertController, animated: true, completion: nil)
+	}
+	
+	private func segueToInformationPostingView() {
+		self.performSegue(withIdentifier: self.informationPostingSegue, sender: nil)
+	}
+	
 	//MARK: UIViewController overrides
 	
 	override func viewWillAppear(_ animated: Bool) {
-		if (ParseClient.shared.studentRecords.isEmpty) {
+		if (ParseClient.shared.needsRefresh) {
 			refresh()
 		}
 	}

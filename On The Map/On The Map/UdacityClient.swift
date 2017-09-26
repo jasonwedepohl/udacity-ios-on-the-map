@@ -22,6 +22,13 @@ class UdacityClient {
 	
 	struct Url {
 		static let session = "https://www.udacity.com/api/session"
+		static let users = "https://www.udacity.com/api/users/"
+	}
+	
+	struct UdacityResponseKey {
+		static let user = "user"
+		static let firstName = "first_name"
+		static let lastName = "last_name"
 	}
 	
 	//MARK: Properties
@@ -30,6 +37,8 @@ class UdacityClient {
 	
 	var udacitySessionID: String? = nil
 	var udacityAccountKey: String? = nil
+	var udacityFirstName: String? = nil
+	var udacityLastName: String? = nil
 	
 	//MARK: Functions
 	
@@ -110,9 +119,7 @@ class UdacityClient {
 			return
 		}
 		
-		//subset response
-		let range = Range(responseHeaderLength..<data!.count)
-		let subsetResponseData = data!.subdata(in: range)
+		let subsetResponseData = self.subsetResponse(data!)
 		
 		guard let response:UdacityLoginResponse = JSONParser.decode(subsetResponseData) else {
 			completion(false, DisplayError.unexpected)
@@ -122,7 +129,62 @@ class UdacityClient {
 		self.udacityAccountKey = response.account.key
 		self.udacitySessionID = response.session.id
 		
-		completion(true, nil)
+		getUserDetails(completion)
+	}
+	
+	private func getUserDetails(_ completion: @escaping (_ success: Bool, _ displayError: String?) -> Void) {
+		
+		let request = NSMutableURLRequest(url: URL(string: Url.users + udacityAccountKey!)!)
+		
+		let task = session.dataTask(with: request as URLRequest) { data, response, error in
+			
+			let responseHandler = ResponseHandler(data, response, error)
+			
+			if let responseError = responseHandler.getResponseError() {
+				completion(false, responseError)
+				return
+			}
+			
+			let subsetResponseData = self.subsetResponse(data!)
+			
+			//TODO: replace use of JSONSerialization with Swift 4 Codable
+			guard let parsedResponse = JSONParser.deserialize(subsetResponseData) else {
+				completion(false, DisplayError.unexpected)
+				return
+			}
+			
+			guard let responseDictionary = parsedResponse as? [String: AnyObject] else {
+				completion(false, DisplayError.unexpected)
+				return
+			}
+			
+			guard let user = responseDictionary[UdacityResponseKey.user] as? [String: AnyObject] else {
+				completion(false, DisplayError.unexpected)
+				return
+			}
+			
+			guard let firstName = user[UdacityResponseKey.firstName] as? String else {
+				completion(false, DisplayError.unexpected)
+				return
+			}
+			
+			guard let lastName = user[UdacityResponseKey.lastName] as? String else {
+				completion(false, DisplayError.unexpected)
+				return
+			}
+			
+			self.udacityFirstName = firstName
+			self.udacityLastName = lastName
+			
+			completion(true, nil)
+		}
+		task.resume()
+	}
+	
+	//All responses from Udacity API start with 5 characters that must be skipped
+	private func subsetResponse(_ data: Data) -> Data {
+		let range = Range(responseHeaderLength..<data.count)
+		return data.subdata(in: range)
 	}
 	
 	//MARK: Request structs

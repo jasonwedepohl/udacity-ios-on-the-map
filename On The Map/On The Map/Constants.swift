@@ -12,6 +12,7 @@ struct WebMethod {
 	static let get = "GET";
 	static let post = "POST";
 	static let delete = "DELETE";
+	static let put = "PUT"
 }
 
 struct RequestKey {

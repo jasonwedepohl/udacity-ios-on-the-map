@@ -28,4 +28,14 @@ class JSONParser {
 			return nil
 		}
 	}
+	
+	static func deserialize(_ data: Data) -> AnyObject? {
+		var parsedResult: AnyObject! = nil
+		do {
+			parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as AnyObject
+		} catch {
+			print("Could not deserialize the given data to JSON: \(error.localizedDescription)")
+		}
+		return parsedResult
+	}
 }
