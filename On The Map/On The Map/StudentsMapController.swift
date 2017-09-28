@@ -34,8 +34,9 @@ class StudentsMapController: UIViewController, MKMapViewDelegate {
 		
 		//create new annotations
 		var annotations = [MKPointAnnotation]()
+		let records = StudentRecordCache.instance.getAll()
 		
-		for record in ParseClient.shared.studentRecords {
+		for record in records {
 			let lat = CLLocationDegrees(record.latitude)
 			let long = CLLocationDegrees(record.longitude)
 			

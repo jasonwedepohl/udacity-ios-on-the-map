@@ -34,18 +34,9 @@ class ParseClient {
 	
 	let session = URLSession.shared
 	var needsRefresh = true
-	var studentRecords = [StudentRecord]()
 	var loggedInStudentRecordID: String? = nil
 	
 	//MARK: Functions
-	
-	func getRecordInCache(fromIndex index: Int) -> StudentRecord? {
-		if (index >= studentRecords.count) {
-			print("Student record index out of bounds.")
-			return nil
-		}
-		return studentRecords[index]
-	}
 	
 	func getStudentRecords(_ completion: @escaping (_ success: Bool, _ displayError: String?) -> Void) {
 		
@@ -82,7 +73,9 @@ class ParseClient {
 					$0.updatedAt != nil
 			}
 			
-			self.studentRecords = validResponseResults.map { StudentRecord($0) }
+			let studentRecords = validResponseResults.map { StudentRecord($0) }
+			
+			StudentRecordCache.instance.set(studentRecords)
 			
 			completion(true, nil)
 		}

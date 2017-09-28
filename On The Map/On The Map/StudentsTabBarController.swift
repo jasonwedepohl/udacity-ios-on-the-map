@@ -29,6 +29,8 @@ class StudentsTabBarController: UITabBarController {
 	//MARK: Actions
 	
 	@IBAction func logout(_ sender: Any) {
+		ParseClient.shared.needsRefresh = true
+		
 		waitingSpinner.show(self)
 		
 		UdacityClient.shared.logout(completion: {(successful, displayError) in

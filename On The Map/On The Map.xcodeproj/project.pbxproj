@@ -20,6 +20,7 @@
 		4D5F38261F7413320040AFC9 /* StudentsMapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D5F38251F7413320040AFC9 /* StudentsMapController.swift */; };
 		4D7413FC1F72CB6400468107 /* ResponseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7413FB1F72CB6400468107 /* ResponseHandler.swift */; };
 		4D7414041F72EB8000468107 /* JSONParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D7414031F72EB8000468107 /* JSONParser.swift */; };
+		4DAC3CA91F7CF09A001EA34B /* StudentRecordCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DAC3CA81F7CF09A001EA34B /* StudentRecordCache.swift */; };
 		4DED8D951F70091700E1E2ED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DED8D941F70091700E1E2ED /* AppDelegate.swift */; };
 		4DED8D971F70091700E1E2ED /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DED8D961F70091700E1E2ED /* LoginViewController.swift */; };
 		4DED8D9A1F70091700E1E2ED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4DED8D981F70091700E1E2ED /* Main.storyboard */; };
@@ -41,6 +42,7 @@
 		4D5F38251F7413320040AFC9 /* StudentsMapController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudentsMapController.swift; sourceTree = "<group>"; };
 		4D7413FB1F72CB6400468107 /* ResponseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseHandler.swift; sourceTree = "<group>"; };
 		4D7414031F72EB8000468107 /* JSONParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONParser.swift; sourceTree = "<group>"; };
+		4DAC3CA81F7CF09A001EA34B /* StudentRecordCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudentRecordCache.swift; sourceTree = "<group>"; };
 		4DED8D911F70091700E1E2ED /* On The Map.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "On The Map.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4DED8D941F70091700E1E2ED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4DED8D961F70091700E1E2ED /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 				4D4E87291F713D3E004BB28F /* Clients */,
 				4D4E87261F7129CC004BB28F /* Constants.swift */,
 				4D5F381F1F740B6B0040AFC9 /* StudentRecord.swift */,
+				4DAC3CA81F7CF09A001EA34B /* StudentRecordCache.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -310,6 +313,7 @@
 				4D7413FC1F72CB6400468107 /* ResponseHandler.swift in Sources */,
 				4DED8DA71F701BEE00E1E2ED /* UdacityClient.swift in Sources */,
 				4D5F38221F740C2D0040AFC9 /* ParseClient.swift in Sources */,
+				4DAC3CA91F7CF09A001EA34B /* StudentRecordCache.swift in Sources */,
 				4D5F38261F7413320040AFC9 /* StudentsMapController.swift in Sources */,
 				4D5E673D1F74F5670060288E /* WaitingSpinner.swift in Sources */,
 			);
