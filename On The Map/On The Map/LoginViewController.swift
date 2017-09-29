@@ -20,6 +20,7 @@ class LoginViewController: UIViewController {
 	
 	let waitingSpinner = WaitingSpinner()
 	let facebookLoginManager = LoginManager()
+	var activeField: UITextField?
 	
 	//MARK: Outlets
 	
@@ -27,6 +28,7 @@ class LoginViewController: UIViewController {
 	@IBOutlet var passwordField: UITextField!
 	@IBOutlet var signUpLabel: UILabel!
 	@IBOutlet var loginWithFacebookButton: UIButton!
+	@IBOutlet var scrollView: UIScrollView!
 	
 	//MARK: Actions
 	
@@ -52,7 +54,20 @@ class LoginViewController: UIViewController {
 		
 		//bind facebook login button
 		loginWithFacebookButton.addTarget(self, action: #selector(loginWithFacebook), for: .touchUpInside)
+		
+		emailField.delegate = self
+		passwordField.delegate = self
     }
+	
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+		subscribeToKeyboardNotifications()
+	}
+	
+	override func viewWillDisappear(_ animated: Bool) {
+		super.viewWillDisappear(animated)
+		unsubscribeFromKeyboardNotifications()
+	}
 	
 	@objc private func redirectToUdacitySignUp() {
 		Utilities.openURL(udacitySignUpUrl)
@@ -96,6 +111,69 @@ class LoginViewController: UIViewController {
 			
 			self.waitingSpinner.hide()
 		}
+	}
+}
+
+//MARK: TextField/Keyboard scroll handling extension
+/*
+	References:
+	1. https://stackoverflow.com/a/28813720
+	2. https://developer.apple.com/library/content/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/KeyboardManagement/KeyboardManagement.html
+*/
+
+extension LoginViewController : UITextFieldDelegate {
+	func subscribeToKeyboardNotifications() {
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: .UIKeyboardWillShow, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
+	}
+	
+	func unsubscribeFromKeyboardNotifications() {
+		NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
+		NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
+	}
+	
+	func keyboardWillShow(_ notification: Notification) {
+		scrollView.isScrollEnabled = true
+		let keyboardHeight = getKeyboardHeight(notification)
+		let contentInsets : UIEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, keyboardHeight, 0.0)
+		
+		scrollView.contentInset = contentInsets
+		scrollView.scrollIndicatorInsets = contentInsets
+		
+		var aRect : CGRect = view.frame
+		aRect.size.height -= keyboardHeight
+		if let activeField = self.activeField {
+			if (!aRect.contains(activeField.frame.origin)) {
+				scrollView.scrollRectToVisible(activeField.frame, animated: true)
+			}
+		}
+	}
+	
+	func keyboardWillHide(_ notification: Notification) {
+		let keyboardHeight = getKeyboardHeight(notification)
+		let contentInsets : UIEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, -keyboardHeight, 0.0)
+		scrollView.contentInset = contentInsets
+		scrollView.scrollIndicatorInsets = contentInsets
+		scrollView.isScrollEnabled = false
+	}
+	
+	func getKeyboardHeight(_ notification: Notification) -> CGFloat {
+		let userInfo = notification.userInfo
+		let keyboardSize = userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue
+		return keyboardSize.cgRectValue.height
+	}
+	
+	func textFieldDidBeginEditing(_ textField: UITextField) {
+		activeField = textField
+	}
+	
+	func textFieldDidEndEditing(_ textField: UITextField) {
+		activeField = nil
+	}
+	
+	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+		textField.resignFirstResponder()
+		return true
 	}
 }
 

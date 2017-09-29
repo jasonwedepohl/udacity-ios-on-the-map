@@ -119,15 +119,15 @@ class UdacityClient {
 			return
 		}
 		
-		let subsetResponseData = self.subsetResponse(data!)
+		let subsetResponseData = subsetResponse(data!)
 		
 		guard let response:UdacityLoginResponse = JSONParser.decode(subsetResponseData) else {
 			completion(false, DisplayError.unexpected)
 			return
 		}
 		
-		self.udacityAccountKey = response.account.key
-		self.udacitySessionID = response.session.id
+		udacityAccountKey = response.account.key
+		udacitySessionID = response.session.id
 		
 		getUserDetails(completion)
 	}

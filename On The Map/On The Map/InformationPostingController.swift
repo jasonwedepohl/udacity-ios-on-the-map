@@ -21,6 +21,7 @@ class InformationPostingController: UIViewController {
 	let waitingSpinner = WaitingSpinner()
 	var mapString = ""
 	var coordinate: CLLocationCoordinate2D? = nil
+	var activeField: UITextField?
 
 	//MARK: Outlets
 	
@@ -29,6 +30,7 @@ class InformationPostingController: UIViewController {
 	@IBOutlet var mediaURLPrompt: UILabel!
 	@IBOutlet var mediaURLInput: UITextField!
 	@IBOutlet var mapView: MKMapView!
+	@IBOutlet var scrollView: UIScrollView!
 	
 	//MARK: Actions
 	
@@ -83,20 +85,20 @@ class InformationPostingController: UIViewController {
 	}
 	
 	private func showLocationAndAllowSubmit() {
-		self.mapStringPrompt.isHidden = true
-		self.mapStringInput.isHidden = true
+		mapStringPrompt.isHidden = true
+		mapStringInput.isHidden = true
 		
-		self.mapView.isHidden = false
-		self.mediaURLPrompt.isHidden = false
-		self.mediaURLInput.isHidden = false
+		mapView.isHidden = false
+		mediaURLPrompt.isHidden = false
+		mediaURLInput.isHidden = false
 		
 		//navigate to map location
-		self.mapView.setCenter(coordinate!, animated: false)
+		mapView.setCenter(coordinate!, animated: false)
 		
 		//add pin
 		let annotation = MKPointAnnotation()
 		annotation.coordinate = coordinate!
-		self.mapView.addAnnotation(annotation)
+		mapView.addAnnotation(annotation)
 	}
 	
 	//MARK: UIViewController overrides
@@ -109,7 +111,20 @@ class InformationPostingController: UIViewController {
 		
 		mapStringInput.tag = mapStringInputTag
 		mediaURLInput.tag = mediaUrlInputTag
+		
+		mapStringInput.delegate = self
+		mediaURLInput.delegate = self
     }
+	
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+		subscribeToKeyboardNotifications()
+	}
+	
+	override func viewWillDisappear(_ animated: Bool) {
+		super.viewWillDisappear(animated)
+		unsubscribeFromKeyboardNotifications()
+	}
 }
 
 //MARK: MKMapViewDelegate extension
@@ -133,7 +148,15 @@ extension InformationPostingController: MKMapViewDelegate {
 
 //MARK: UITextViewDelegate extension
 
-extension InformationPostingController: UITextViewDelegate {
+extension InformationPostingController: UITextFieldDelegate {
+	func textFieldDidBeginEditing(_ textField: UITextField) {
+		activeField = textField
+	}
+	
+	func textFieldDidEndEditing(_ textField: UITextField) {
+		activeField = nil
+	}
+	
 	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 		textField.resignFirstResponder()
 		if textField.tag == mapStringInputTag {
@@ -142,5 +165,55 @@ extension InformationPostingController: UITextViewDelegate {
 			submit()
 		}
 		return true
+	}
+}
+
+//MARK: TextField/Keyboard scroll handling extension
+/*
+References:
+1. https://stackoverflow.com/a/28813720
+2. https://developer.apple.com/library/content/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/KeyboardManagement/KeyboardManagement.html
+*/
+
+extension InformationPostingController {
+	func subscribeToKeyboardNotifications() {
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: .UIKeyboardWillShow, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: .UIKeyboardWillHide, object: nil)
+	}
+	
+	func unsubscribeFromKeyboardNotifications() {
+		NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
+		NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
+	}
+	
+	func keyboardWillShow(_ notification: Notification) {
+		scrollView.isScrollEnabled = true
+		let keyboardHeight = getKeyboardHeight(notification)
+		let contentInsets : UIEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, keyboardHeight, 0.0)
+		
+		scrollView.contentInset = contentInsets
+		scrollView.scrollIndicatorInsets = contentInsets
+		
+		var aRect : CGRect = view.frame
+		aRect.size.height -= keyboardHeight
+		if let activeField = self.activeField {
+			if (!aRect.contains(activeField.frame.origin)) {
+				scrollView.scrollRectToVisible(activeField.frame, animated: true)
+			}
+		}
+	}
+	
+	func keyboardWillHide(_ notification: Notification) {
+		let keyboardHeight = getKeyboardHeight(notification)
+		let contentInsets : UIEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, -keyboardHeight, 0.0)
+		scrollView.contentInset = contentInsets
+		scrollView.scrollIndicatorInsets = contentInsets
+		scrollView.isScrollEnabled = false
+	}
+	
+	func getKeyboardHeight(_ notification: Notification) -> CGFloat {
+		let userInfo = notification.userInfo
+		let keyboardSize = userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue
+		return keyboardSize.cgRectValue.height
 	}
 }

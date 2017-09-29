@@ -109,16 +109,17 @@ class StudentsTabBarController: UITabBarController {
 		alertController.addAction(okAction)
 		alertController.addAction(cancelAction)
 		
-		self.present(alertController, animated: true, completion: nil)
+		present(alertController, animated: true, completion: nil)
 	}
 	
 	private func segueToInformationPostingView() {
-		self.performSegue(withIdentifier: self.informationPostingSegue, sender: nil)
+		performSegue(withIdentifier: informationPostingSegue, sender: nil)
 	}
 	
 	//MARK: UIViewController overrides
 	
 	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
 		if (ParseClient.shared.needsRefresh) {
 			refresh()
 		}
