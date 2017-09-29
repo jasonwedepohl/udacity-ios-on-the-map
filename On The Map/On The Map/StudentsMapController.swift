@@ -26,8 +26,6 @@ class StudentsMapController: UIViewController, MKMapViewDelegate {
 	}
 	
 	func displayStudentRecords() {
-		print("Displaying student records on map.")
-		
 		//remove old annotations from the map
 		let oldAnnotations = mapView.annotations
 		mapView.removeAnnotations(oldAnnotations)

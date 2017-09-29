@@ -25,7 +25,6 @@ class StudentsListController: UIViewController, UITableViewDataSource, UITableVi
 	}
 	
 	func displayStudentRecords() {
-		print("Displaying student records in list.")
 		studentTableView.reloadData()
 	}
 	
